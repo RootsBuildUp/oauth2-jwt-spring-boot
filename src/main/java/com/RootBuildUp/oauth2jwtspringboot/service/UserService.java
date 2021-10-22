@@ -21,8 +21,6 @@ import java.util.*;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final TokenService tokenService;
-//    private final AuthenticationManager authenticationManager;
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
@@ -30,12 +28,17 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken("",""));
         return new org.springframework.security.core.userdetails.User(String.valueOf(user.getId()), user.getPassword(), getAuthority());
     }
 
     private List<SimpleGrantedAuthority> getAuthority() {
+//        return Arrays.asList(new SimpleGrantedAuthority("ADMIN"));
         return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
+
+    public User create(User user) {
+        return userRepository.save(user);
+
     }
 
 }

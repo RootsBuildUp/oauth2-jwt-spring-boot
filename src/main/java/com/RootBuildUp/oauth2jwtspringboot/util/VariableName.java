@@ -48,6 +48,7 @@ public interface VariableName {
     String AUTHORIZATION_CODE = "authorization_code";
     String REFRESH_TOKEN = "refresh_token";
     String IMPLICIT = "implicit";
+    String SCOPE_TYPE = "scope";
     String SCOPE_READ = "read";
     String SCOPE_WRITE = "write";
     String TRUST = "trust";

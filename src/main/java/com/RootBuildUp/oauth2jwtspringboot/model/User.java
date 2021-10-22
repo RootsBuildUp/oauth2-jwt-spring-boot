@@ -18,26 +18,12 @@ import static java.util.stream.Collectors.toList;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "users")
 public class User extends BaseIdEntity implements UserDetails{
 
     @Column(nullable = false, unique = true)
     private String username;
     private String password;
-
-    private String first_name;
-    private String last_name;
-    private String email;
-    private String emp_id;
-    private int is_active;
-
-    private Date start_date;
-    private Date end_date;
-
-    private String created_by;
-    private Timestamp created_at;
-    private String updated_by;
-    private Timestamp updated_at;
 
     @OneToOne(mappedBy = "user")
     private TokenStore token;

@@ -1,6 +1,6 @@
 package com.RootBuildUp.oauth2jwtspringboot.util;
 
-public interface HRApi {
+public interface OauthApi {
 
 
     //RegistrationController api
