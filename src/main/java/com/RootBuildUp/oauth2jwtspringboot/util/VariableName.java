@@ -52,8 +52,8 @@ public interface VariableName {
     String SCOPE_READ = "read";
     String SCOPE_WRITE = "write";
     String TRUST = "trust";
-    int ACCESS_TOKEN_VALIDITY_SECONDS = 3;
-    int REFRESH_TOKEN_VALIDITY_SECONDS = 3;
+    int ACCESS_TOKEN_VALIDITY_SECONDS = 3000;
+    int REFRESH_TOKEN_VALIDITY_SECONDS = 3000;
 
     //RegistrationController variable name;
     String BASIC_AUTH ="Basic ";

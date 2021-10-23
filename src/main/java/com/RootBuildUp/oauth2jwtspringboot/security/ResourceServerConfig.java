@@ -15,13 +15,14 @@ import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHand
 @Order(SecurityProperties.BASIC_AUTH_ORDER)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
-
+    /**
+     * CROSS configuration.
+     */
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.anonymous().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS,"/oauth/token").permitAll()
-                .antMatchers("/users/**").access("hasRole('ADMIN')")
+                .antMatchers("/users").access("hasRole('ADMIN')")
                 .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
 

@@ -37,7 +37,6 @@ public class TokenService {
         map.add(VariableName.USER_NAME, login.getUsername());
         map.add(VariableName.PASSWORD, login.getPassword());
         map.add(VariableName.GRANT_TYPE, VariableName.GRANT_TYPE_PASSWORD);
-        map.add(VariableName.SCOPE_TYPE, VariableName.SCOPE_READ);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         System.out.println(request);

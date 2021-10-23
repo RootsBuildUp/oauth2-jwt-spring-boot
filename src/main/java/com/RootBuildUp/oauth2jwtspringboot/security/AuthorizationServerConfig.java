@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpointAuthenticationFilter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -32,9 +34,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private Boolean checkUserScopes;
 
     @Autowired
-    private DataSource dataSource;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Qualifier("userService")
@@ -47,6 +46,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
+
+
 
     /**
      * Request factory.
@@ -87,12 +88,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
-                .jdbc(dataSource).passwordEncoder(passwordEncoder)
-                .inMemory().withClient(VariableName.CLIENT_ID).secret(VariableName.CLIENT_SECRET)
-                .scopes(VariableName.SCOPE_READ, VariableName.SCOPE_WRITE)
-                .authorizedGrantTypes(VariableName.GRANT_TYPE_PASSWORD, VariableName.REFRESH_TOKEN)
-                .accessTokenValiditySeconds(VariableName.ACCESS_TOKEN_VALIDITY_SECONDS)
-                .refreshTokenValiditySeconds(VariableName.REFRESH_TOKEN_VALIDITY_SECONDS);
+                .inMemory().withClient(VariableName.CLIENT_ID)
+                .secret(passwordEncoder.encode(VariableName.CLIENT_SECRET))
+                .authorizedGrantTypes(VariableName.GRANT_TYPE_PASSWORD, VariableName.AUTHORIZATION_CODE, VariableName.REFRESH_TOKEN, VariableName.IMPLICIT )
+                .scopes(VariableName.SCOPE_READ, VariableName.SCOPE_WRITE,VariableName.TRUST)
+                .accessTokenValiditySeconds(VariableName.ACCESS_TOKEN_VALIDITY_SECONDS).
+                refreshTokenValiditySeconds(VariableName.REFRESH_TOKEN_VALIDITY_SECONDS);
     }
 
     /**
@@ -110,7 +111,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
      */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-        oauthServer.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()")
+        oauthServer.allowFormAuthenticationForClients()
+                .tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()")
                 .passwordEncoder(passwordEncoder);
     }
 
@@ -120,7 +122,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore()).tokenEnhancer(jwtAccessTokenConverter())
-                .authenticationManager(authenticationManager).userDetailsService(userDetailsService);
+                .authenticationManager(authenticationManager);
+        //.userDetailsService(userDetailsService);
         if (checkUserScopes)
             endpoints.requestFactory(requestFactory());
     }

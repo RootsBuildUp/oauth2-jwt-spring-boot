@@ -17,11 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
 @RestController
-//@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
-    @Autowired private TokenService tokenService;
-    @Autowired private UserService userService;
-    @Autowired private PasswordEncoder encoder;
+    private final TokenService tokenService;
+    private final UserService userService;
+    private final PasswordEncoder encoder;
 
     @PostMapping("login")
     public Object getToken(@RequestBody Login login){
@@ -41,6 +41,12 @@ public class UserController {
         user.setRoles(Arrays.asList("ROLE_ADMIN","ROLE_USER"));
         return userService.create(user);
     }
+
+    @GetMapping("hello")
+    public String hello(){
+        return "hello";
+    }
+
 
 
 }
