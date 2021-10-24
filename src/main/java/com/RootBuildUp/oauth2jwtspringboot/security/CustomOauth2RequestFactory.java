@@ -12,9 +12,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-
 import java.util.Map;
-import java.util.Set;
 
 public class CustomOauth2RequestFactory extends DefaultOAuth2RequestFactory {
 

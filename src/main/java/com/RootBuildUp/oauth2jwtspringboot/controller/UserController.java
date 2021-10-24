@@ -28,9 +28,9 @@ public class UserController {
         return tokenService.tokenGenerate(login);
     }
 
-    @GetMapping("refreshToken")
-    public Object getTokenByRefreshToken(HttpServletRequest rq){
-        return tokenService.tokenGenerateByRefreshToken(rq);
+    @PostMapping("refreshToken")
+    public Object getTokenByRefreshToken(@RequestBody Login login){
+        return tokenService.tokenGenerateByRefreshToken(login);
     }
 
     @GetMapping("user")

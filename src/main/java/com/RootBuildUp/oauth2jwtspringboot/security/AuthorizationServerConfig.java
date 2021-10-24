@@ -47,8 +47,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
 
-
-
     /**
      * Request factory.
      * @return
@@ -90,7 +88,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         clients
                 .inMemory().withClient(VariableName.CLIENT_ID)
                 .secret(passwordEncoder.encode(VariableName.CLIENT_SECRET))
-                .authorizedGrantTypes(VariableName.GRANT_TYPE_PASSWORD, VariableName.AUTHORIZATION_CODE, VariableName.REFRESH_TOKEN, VariableName.IMPLICIT )
+               .authorizedGrantTypes(VariableName.GRANT_TYPE_PASSWORD, VariableName.AUTHORIZATION_CODE, VariableName.REFRESH_TOKEN, VariableName.IMPLICIT )
                 .scopes(VariableName.SCOPE_READ, VariableName.SCOPE_WRITE,VariableName.TRUST)
                 .accessTokenValiditySeconds(VariableName.ACCESS_TOKEN_VALIDITY_SECONDS).
                 refreshTokenValiditySeconds(VariableName.REFRESH_TOKEN_VALIDITY_SECONDS);
@@ -122,8 +120,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore()).tokenEnhancer(jwtAccessTokenConverter())
-                .authenticationManager(authenticationManager);
-        //.userDetailsService(userDetailsService);
+                .authenticationManager(authenticationManager).userDetailsService(userDetailsService);
         if (checkUserScopes)
             endpoints.requestFactory(requestFactory());
     }

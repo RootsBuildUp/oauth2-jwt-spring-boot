@@ -51,7 +51,7 @@ public class TokenService {
         return result;
     }
 
-    public Object tokenGenerateByRefreshToken(HttpServletRequest rq){
+    public Object tokenGenerateByRefreshToken(Login login){
         util = Util.getInstance();
         // HttpHeaders
         HttpHeaders headers = new HttpHeaders();
@@ -65,8 +65,10 @@ public class TokenService {
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 
+        map.add(VariableName.USER_NAME, login.getUsername());
+        map.add(VariableName.PASSWORD, login.getPassword());
         map.add(VariableName.GRANT_TYPE, VariableName.REFRESH_TOKEN);
-        map.add(VariableName.REFRESH_TOKEN, getJwt(rq));
+        map.add(VariableName.REFRESH_TOKEN, login.getRefreshToken());
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         System.out.println(request);
@@ -84,6 +86,7 @@ public class TokenService {
     public String getJwt(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
+        System.out.println(authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.replace("Bearer ","");
         }
