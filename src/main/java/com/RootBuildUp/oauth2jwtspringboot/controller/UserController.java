@@ -6,6 +6,7 @@ import com.RootBuildUp.oauth2jwtspringboot.service.TokenService;
 import com.RootBuildUp.oauth2jwtspringboot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ public class UserController {
     }
 
     @PostMapping("refreshToken")
+    @PreAuthorize("hasAnyRole(ADMIN)")
     public Object getTokenByRefreshToken(@RequestBody Login login){
         return tokenService.tokenGenerateByRefreshToken(login);
     }
