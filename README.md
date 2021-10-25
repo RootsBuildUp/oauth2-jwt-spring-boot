@@ -29,6 +29,10 @@
     
     (6)  The resource server validates the access token, and if valid, serves the request.
 
+### . OAuth2 (authorization server/resource owner and resource server)
+    The app acts both as OAuth2 authorization server/resource owner and as resource server.
+    The protected resources (as resource server) are published under /api/ path, while authentication path
+    (as resource owner/authorization server) is mapped to /oauth/token, following proposed default.
 #### Document working............
 
 ### Document Reference
