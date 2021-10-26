@@ -29,10 +29,153 @@
     
     (6)  The resource server validates the access token, and if valid, serves the request.
 
-### . OAuth2 (authorization server/resource owner and resource server)
+###  OAuth2 Server (authorization server/resource owner and resource server)
     The app acts both as OAuth2 authorization server/resource owner and as resource server.
     The protected resources (as resource server) are published under /api/ path, while authentication path
     (as resource owner/authorization server) is mapped to /oauth/token, following proposed default.
+
+### Setup for Resource Owner and Authorization Server
+    Authorization server behavior is enabled by the presence of @EnableAuthorizationServer annotation. Its configuration is merged with the one related to the resource owner behavior and both are contained in the class AuthorizationServerConfigurerAdapter.
+
+#### The configurations applied here are related to:
+
+- Client access (using ClientDetailsServiceConfigurer)
+     - Selection of use an ***in-memory or JDBC*** based storage for client details with inMemory or jdbc methods
+     - Client’s basic authentication using clientId and clientSecret (encoded with the chosen PasswordEncoder bean) attributes
+     - Validity time for access and refresh tokens using accessTokenValiditySeconds and refreshTokenValiditySeconds attributes
+     - Grant types allowed using authorizedGrantTypes attribute
+     - Defines access scopes with scopes method
+     - Identify client’s accessible resources
+- Authorization server endpoint (using AuthorizationServerEndpointsConfigurer)
+     - Define the use of a JWT token with accessTokenConverter
+     - Define the use of an UserDetailsService and AuthenticationManager interfaces to perform authentication (as resource owner)
+
+      package com.RootBuildUp.oauth2jwtspringboot.security;
+
+        import com.RootBuildUp.oauth2jwtspringboot.util.VariableName;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.beans.factory.annotation.Qualifier;
+        import org.springframework.beans.factory.annotation.Value;
+        import org.springframework.context.annotation.Bean;
+        import org.springframework.context.annotation.Configuration;
+        import org.springframework.security.authentication.AuthenticationManager;
+        import org.springframework.security.core.userdetails.UserDetailsService;
+        import org.springframework.security.crypto.password.PasswordEncoder;
+        import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
+        import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+        import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+        import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+        import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+        import org.springframework.security.oauth2.provider.ClientDetailsService;
+        import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+        import org.springframework.security.oauth2.provider.endpoint.TokenEndpointAuthenticationFilter;
+        import org.springframework.security.oauth2.provider.token.TokenStore;
+        import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+        import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+        
+        @Configuration
+        @EnableAuthorizationServer
+        public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
+    
+    
+        @Value("${check-user-scopes}")
+        private Boolean checkUserScopes;
+    
+        @Autowired
+        private PasswordEncoder passwordEncoder;
+    
+        @Qualifier("userService")
+        @Autowired
+        private UserDetailsService userDetailsService;
+    
+        @Autowired
+        private ClientDetailsService clientDetailsService;
+    
+        @Autowired
+        @Qualifier("authenticationManagerBean")
+        private AuthenticationManager authenticationManager;
+    
+        /**
+         * Request factory.
+         * @return
+         */
+        @Bean
+        public OAuth2RequestFactory requestFactory() {
+            CustomOauth2RequestFactory requestFactory = new CustomOauth2RequestFactory(clientDetailsService);
+            requestFactory.setCheckUserScopes(true);
+            return requestFactory;
+        }
+    
+    
+        /**
+         * Token store in database.
+         * @return
+         */
+        @Bean
+        public TokenStore tokenStore() {
+            return new JwtTokenStore(jwtAccessTokenConverter());
+        }
+    
+        /**
+         * JWT access token converter.
+         * @return
+         */
+        @Bean
+        public JwtAccessTokenConverter jwtAccessTokenConverter() {
+            JwtAccessTokenConverter converter = new CustomTokenEnhancer();
+            converter.setSigningKey(VariableName.RSE_PRIVATE_KEY);
+            converter.setVerifierKey(VariableName.RSE_PUBLIC_KEY);
+            return converter;
+        }
+    
+        /**
+         * Configurer method to communicate with DB.
+         */
+        @Override
+        public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+            clients
+                    .inMemory().withClient(VariableName.CLIENT_ID)
+                    .secret(passwordEncoder.encode(VariableName.CLIENT_SECRET))
+                    .authorizedGrantTypes(VariableName.GRANT_TYPE_PASSWORD, VariableName.AUTHORIZATION_CODE, VariableName.REFRESH_TOKEN, VariableName.IMPLICIT )
+                    .scopes(VariableName.SCOPE_READ, VariableName.SCOPE_WRITE,VariableName.TRUST)
+                    .accessTokenValiditySeconds(VariableName.ACCESS_TOKEN_VALIDITY_SECONDS)
+                    .refreshTokenValiditySeconds(VariableName.REFRESH_TOKEN_VALIDITY_SECONDS);
+        }
+    
+        /**
+         * Token end point authenticator.
+         * @return
+         */
+        @Bean
+        public TokenEndpointAuthenticationFilter tokenEndpointAuthenticationFilter() {
+            return new TokenEndpointAuthenticationFilter(authenticationManager, requestFactory());
+        }
+    
+    
+        /**
+         * Check token access.
+         */
+        @Override
+        public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+            oauthServer.allowFormAuthenticationForClients()
+                    .tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()")
+                    .passwordEncoder(passwordEncoder);
+        }
+    
+        /**
+         * Check token scope.
+         */
+        @Override
+        public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+            endpoints.tokenStore(tokenStore()).tokenEnhancer(jwtAccessTokenConverter())
+                    .authenticationManager(authenticationManager).userDetailsService(userDetailsService);
+            if (checkUserScopes)
+                endpoints.requestFactory(requestFactory());
+        }
+  
+      }
+
+
 #### Document working............
 
 ### Document Reference
