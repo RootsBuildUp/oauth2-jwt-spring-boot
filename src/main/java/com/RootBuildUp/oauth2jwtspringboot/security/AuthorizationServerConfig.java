@@ -44,11 +44,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private AuthenticationManager authenticationManager;
 
     /**
-     * Request factory.
+     * Request factory. step 4
      * @return
      */
     @Bean
     public OAuth2RequestFactory requestFactory() {
+        System.out.println("------------request factory---------------");
         CustomOauth2RequestFactory requestFactory = new CustomOauth2RequestFactory(clientDetailsService);
         requestFactory.setCheckUserScopes(true);
         return requestFactory;
@@ -56,20 +57,22 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 
     /**
-     * Token store in database.
+     * Token store in database. step 5
      * @return
      */
     @Bean
     public TokenStore tokenStore() {
+        System.out.println("----------------token store----------------");
         return new JwtTokenStore(jwtAccessTokenConverter());
     }
 
     /**
-     * JWT access token converter.
+     * JWT access token converter. step 6
      * @return
      */
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        System.out.println("------------jwtAccessTokenConverter----------------");
         JwtAccessTokenConverter converter = new CustomTokenEnhancer();
         converter.setSigningKey(VariableName.RSE_PRIVATE_KEY);
         converter.setVerifierKey(VariableName.RSE_PUBLIC_KEY);
@@ -77,10 +80,33 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     /**
-     * Configurer method to communicate with DB.
+     * Token end point authenticator. step 3
+     * @return
+     */
+    @Bean
+    public TokenEndpointAuthenticationFilter tokenEndpointAuthenticationFilter() {
+        System.out.println("----------------tokenEndpointAuthenticationFilter-----------------");
+        return new TokenEndpointAuthenticationFilter(authenticationManager, requestFactory());
+    }
+
+    /**
+     * Check token scope. step 7
+     */
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        System.out.println("------------------AuthorizationServerEndpointsConfigurer--------------");
+        endpoints.tokenStore(tokenStore()).tokenEnhancer(jwtAccessTokenConverter())
+                .authenticationManager(authenticationManager).userDetailsService(userDetailsService);
+        if (checkUserScopes)
+            endpoints.requestFactory(requestFactory());
+    }
+
+    /**
+     * Configurer method to communicate with DB(Authorization Server). step 8
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        System.out.println("-----------ClientDetailsServiceConfigurer------------------");
         clients
                 .inMemory().withClient(VariableName.CLIENT_ID)
                 .secret(passwordEncoder.encode(VariableName.CLIENT_SECRET))
@@ -91,34 +117,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     /**
-     * Token end point authenticator.
-     * @return
-     */
-    @Bean
-    public TokenEndpointAuthenticationFilter tokenEndpointAuthenticationFilter() {
-        return new TokenEndpointAuthenticationFilter(authenticationManager, requestFactory());
-    }
-
-
-    /**
-     * Check token access.
+     * Check token access. step 9
      */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+        System.out.println("-----------------AuthorizationServerSecurityConfigurer--------------");
         oauthServer.allowFormAuthenticationForClients()
                 .tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()")
                 .passwordEncoder(passwordEncoder);
-    }
-
-    /**
-     * Check token scope.
-     */
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.tokenStore(tokenStore()).tokenEnhancer(jwtAccessTokenConverter())
-                .authenticationManager(authenticationManager).userDetailsService(userDetailsService);
-        if (checkUserScopes)
-            endpoints.requestFactory(requestFactory());
     }
 
 

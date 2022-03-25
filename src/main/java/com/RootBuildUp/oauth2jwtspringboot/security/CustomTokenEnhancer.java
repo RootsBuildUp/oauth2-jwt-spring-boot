@@ -14,11 +14,11 @@ public class CustomTokenEnhancer extends JwtAccessTokenConverter {
 
 
     /**
-     * Enhance access token. This will send as response.
+     * Enhance access token. This will send as response. step 13
      */
     @Override
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-
+        System.out.println("----------------------enhance---------------------------");
         User user = (User) authentication.getPrincipal();
         Map<String, Object> info = new LinkedHashMap<>(accessToken.getAdditionalInformation());
         info.put("username", user.getUsername());

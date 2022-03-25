@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Qualifier("userService")
@@ -33,36 +35,41 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
     /**
-     * Password encoder.
+     * Password encoder. step 1
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
+        System.out.println("------------------passwordEncoder------------");
         if(passwordEncoder == null) passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder;
     }
 
     /**
-     * Authentication manager bean.
+     * Authentication manager bean. step 2
      */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
+        System.out.println("---------------authenticationManagerBean--------------");
         return super.authenticationManagerBean();
     }
 
+
     /**
-     * Authenticator manager builder.
+     * Authenticator manager builder. step 11
      */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        System.out.println("----------------AuthenticationManagerBuilder-------------");
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     /**
-     * CROSS configuration.
+     * CROSS configuration. step 12
      */
     @Override
     public void configure(WebSecurity web) throws Exception {
+        System.out.println("-------------WebSecurity------------------");
         web.ignoring().antMatchers("/login","/refreshToken", "/user", "/actuator/**");
     }
 

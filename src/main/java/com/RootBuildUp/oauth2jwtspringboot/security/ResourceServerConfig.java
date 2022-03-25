@@ -10,11 +10,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     /**
-     * HttpSecurity configuration.
+     * HttpSecurity configuration. step 10
      */
     @Override
     public void configure(HttpSecurity http) throws Exception {
-
+        System.out.println("---------------ResourceServerConfig HttpSecurity ------------------");
         http.cors().disable().
                 authorizeRequests().antMatchers("/user", "/login","/refreshToken").permitAll()
                 .and()
