@@ -42,13 +42,14 @@ public interface VariableName {
             "-----END PUBLIC KEY-----";
 
     //AuthorizationServerConfig variable name
-    String CLIENT_ID = "android-client";
-    String CLIENT_SECRET = "android-secret";
+    String CLIENT_ID = "oauth2-client";
+    String CLIENT_SECRET = "oauth2-secret";
     String GRANT_TYPE_PASSWORD = "password";
     String AUTHORIZATION_CODE = "authorization_code";
     String REFRESH_TOKEN = "refresh_token";
     String IMPLICIT = "implicit";
     String SCOPE_TYPE = "scope";
+    String SCOPE_ALL = "all";
     String SCOPE_READ = "read";
     String SCOPE_WRITE = "write";
     String TRUST = "trust";
@@ -63,4 +64,5 @@ public interface VariableName {
     String USER_NAME ="username";
     String PASSWORD ="password";
     String GRANT_TYPE ="grant_type";
+    int expiredDate = 10;
 }

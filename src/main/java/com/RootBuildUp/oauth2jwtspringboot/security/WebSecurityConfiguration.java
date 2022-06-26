@@ -39,7 +39,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        System.out.println("------------------passwordEncoder------------");
+        System.out.println("1.------------------passwordEncoder------------");
         if(passwordEncoder == null) passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder;
     }
@@ -50,7 +50,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        System.out.println("---------------authenticationManagerBean--------------");
+        System.out.println("2.---------------authenticationManagerBean--------------");
         return super.authenticationManagerBean();
     }
 
@@ -60,7 +60,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        System.out.println("----------------AuthenticationManagerBuilder-------------");
+        System.out.println("11.----------------AuthenticationManagerBuilder-------------");
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
@@ -69,8 +69,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Override
     public void configure(WebSecurity web) throws Exception {
-        System.out.println("-------------WebSecurity------------------");
+        System.out.println("12.-------------WebSecurity------------------");
         web.ignoring().antMatchers("/login","/refreshToken", "/user", "/actuator/**");
     }
+
 
 }

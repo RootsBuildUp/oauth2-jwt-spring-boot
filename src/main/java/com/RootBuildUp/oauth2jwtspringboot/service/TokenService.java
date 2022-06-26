@@ -5,9 +5,11 @@ import com.RootBuildUp.oauth2jwtspringboot.util.OauthApi;
 import com.RootBuildUp.oauth2jwtspringboot.util.Util;
 import com.RootBuildUp.oauth2jwtspringboot.util.VariableName;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -20,6 +22,8 @@ import java.nio.charset.Charset;
 public class TokenService {
 
     private static Util util;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Object tokenGenerate(Login login){
         util = Util.getInstance();
@@ -40,6 +44,7 @@ public class TokenService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         System.out.println(request);
+        System.out.println(passwordEncoder.encode(VariableName.CLIENT_SECRET));
         // RestTemplate
         RestTemplate restTemplate = new RestTemplate();
 
@@ -76,11 +81,11 @@ public class TokenService {
         RestTemplate restTemplate = new RestTemplate();
 
         // Send request with Post method, and Headers.
-        ResponseEntity<Object> response = restTemplate.postForEntity(OauthApi.USER_TOKEN,request, Object.class);
+            ResponseEntity<Object> response = restTemplate.postForEntity(OauthApi.USER_TOKEN, request, Object.class);
 
-        Object result = response.getBody();
+            Object result = response.getBody();
 
-        return result;
+            return result;
     }
 
     public String getJwt(HttpServletRequest request) {

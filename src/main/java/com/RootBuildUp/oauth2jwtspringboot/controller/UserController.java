@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping("refreshToken")
-    @PreAuthorize("hasAnyRole(ADMIN)")
+//    @PreAuthorize("hasAnyRole(ADMIN)")
     public Object getTokenByRefreshToken(@RequestBody Login login){
         return tokenService.tokenGenerateByRefreshToken(login);
     }

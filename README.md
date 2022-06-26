@@ -4,7 +4,7 @@
        Spring Security is a framework focused on providingauthentication and authorization to Spring-based applications.
 2. ### What is OAuth2?
        OAuth2 is an authorization framework to enable a third-party application to obtain limited access to an HTTP service through
-       the sharing of an access token. Its specification supersedes and obsoletes OAuth 1.0 protocol
+       the sharing of an access OAuthToken. Its specification supersedes and obsoletes OAuth 1.0 protocol
 2. ### What is JWT?
        JWT stands for JSON Web Token, a specification for the representation of claims to be transferred between two parties.
        The claims are encoded as a JSON object used as the payload of an encrypted structure which enablesthe claims to be digitally signed or encrypted.
@@ -21,18 +21,18 @@
     specification or using an extension grant type.  The authorization grant type depends on the method used by the client to request authorization and the types supported by the
     authorization server.
     
-    (3)  The client requests an access token by authenticating with the authorization server and presenting the authorization grant.
+    (3)  The client requests an access OAuthToken by authenticating with the authorization server and presenting the authorization grant.
     
-    (4)  The authorization server authenticates the client and validates the authorization grant, and if valid, issues an access token.
+    (4)  The authorization server authenticates the client and validates the authorization grant, and if valid, issues an access OAuthToken.
     
-    (5)  The client requests the protected resource from the resource server and authenticates by presenting the access token.
+    (5)  The client requests the protected resource from the resource server and authenticates by presenting the access OAuthToken.
     
-    (6)  The resource server validates the access token, and if valid, serves the request.
+    (6)  The resource server validates the access OAuthToken, and if valid, serves the request.
 
 ###  OAuth2 Server (authorization server/resource owner and resource server)
     The app acts both as OAuth2 authorization server/resource owner and as resource server.
     The protected resources (as resource server) are published under /api/ path, while authentication path
-    (as resource owner/authorization server) is mapped to /oauth/token, following proposed default.
+    (as resource owner/authorization server) is mapped to /oauth/OAuthToken, following proposed default.
 
 ### Setup for Resource Owner and Authorization Server
     Authorization server behavior is enabled by the presence of @EnableAuthorizationServer annotation. Its configuration is merged with the one related to the resource owner behavior and both are contained in the class AuthorizationServerConfigurerAdapter.
@@ -47,7 +47,7 @@
      - Defines access scopes with scopes method
      - Identify client’s accessible resources
 - Authorization server endpoint (using AuthorizationServerEndpointsConfigurer)
-     - Define the use of a JWT token with accessTokenConverter
+     - Define the use of a JWT OAuthToken with accessTokenConverter
      - Define the use of an UserDetailsService and AuthenticationManager interfaces to perform authentication (as resource owner)
 
       package com.RootBuildUp.oauth2jwtspringboot.security;
@@ -69,9 +69,9 @@
         import org.springframework.security.oauth2.provider.ClientDetailsService;
         import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
         import org.springframework.security.oauth2.provider.endpoint.TokenEndpointAuthenticationFilter;
-        import org.springframework.security.oauth2.provider.token.TokenStore;
-        import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-        import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+        import org.springframework.security.oauth2.provider.OAuthToken.TokenStore;
+        import org.springframework.security.oauth2.provider.OAuthToken.store.JwtAccessTokenConverter;
+        import org.springframework.security.oauth2.provider.OAuthToken.store.JwtTokenStore;
         
         @Configuration
         @EnableAuthorizationServer
@@ -117,7 +117,7 @@
         }
     
         /**
-         * JWT access token converter.
+         * JWT access OAuthToken converter.
          * @return
          */
         @Bean
@@ -153,7 +153,7 @@
     
     
         /**
-         * Check token access.
+         * Check OAuthToken access.
          */
         @Override
         public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
@@ -163,7 +163,7 @@
         }
     
         /**
-         * Check token scope.
+         * Check OAuthToken scope.
          */
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {

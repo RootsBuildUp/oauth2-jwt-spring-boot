@@ -21,8 +21,10 @@ public class CustomTokenEnhancer extends JwtAccessTokenConverter {
         System.out.println("----------------------enhance---------------------------");
         User user = (User) authentication.getPrincipal();
         Map<String, Object> info = new LinkedHashMap<>(accessToken.getAdditionalInformation());
-        info.put("username", user.getUsername());
+//        info.put("clientId", authentication.getOAuth2Request().getClientId());
+//        info.put("username", user.getUsername());
         info.put("userAddress", "Feni");
+//        info.put("roles", user.getAuthorities());
         DefaultOAuth2AccessToken customAccessToken = new DefaultOAuth2AccessToken(accessToken);
         customAccessToken.setAdditionalInformation(info);
         return super.enhance(customAccessToken, authentication);

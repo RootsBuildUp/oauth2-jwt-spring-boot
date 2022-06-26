@@ -14,7 +14,6 @@ import javax.persistence.OneToOne;
 @Entity
 public class TokenStore extends BaseIdEntity {
 
-
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -24,5 +23,6 @@ public class TokenStore extends BaseIdEntity {
     private String tokenStore;
     @Column
     private String privilege;
+    
 
 }
