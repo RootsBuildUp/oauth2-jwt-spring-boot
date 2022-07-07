@@ -70,7 +70,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         System.out.println("12.-------------WebSecurity------------------");
-        web.ignoring().antMatchers("/login","/refreshToken", "/user", "/actuator/**");
+        web.ignoring().antMatchers("/login","/refreshToken", "/user","/dataMigration", "/actuator/**");
     }
 
 

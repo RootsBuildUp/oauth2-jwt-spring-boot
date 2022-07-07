@@ -8,12 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import com.RootBuildUp.oauth2jwtspringboot.model.AccessToken;
 import com.RootBuildUp.oauth2jwtspringboot.redis.service.OAthTokenRepoImpl;
 import com.RootBuildUp.oauth2jwtspringboot.service.AccessTokenService;
-import com.RootBuildUp.oauth2jwtspringboot.util.VariableName;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.service.cblmodel.redis.model.OAuthToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +19,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.DefaultOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;
@@ -143,7 +141,9 @@ public class CustomTokenStore implements TokenStore {
 		if(username != null && clientId != null){
 			log.info("it came here readAccessToken");
 			com.service.cblmodel.redis.model.OAuthToken oAthToken = oAthTokenRepo.findById(username+clientId);
-			if(oAthToken.getExpiredDateAndTime().isBefore(LocalDateTime.now()))return null;
+			if(oAthToken.getExpiredDateAndTime().isBefore(LocalDateTime.now())){
+				throw new InvalidTokenException("Token Date Expired");
+			}
 			else if(tokenValue.equals(oAthToken.getToken())) return getOAuth2AccessToken(tokenValue);
 			else return null;
 		}

@@ -1,6 +1,7 @@
 package com.RootBuildUp.oauth2jwtspringboot.security;
 
 import com.RootBuildUp.oauth2jwtspringboot.config.CustomAccessDeniedHandler;
+import com.RootBuildUp.oauth2jwtspringboot.config.CustomAuthenticationEntryPoint;
 import com.RootBuildUp.oauth2jwtspringboot.config.MyBasicAuthenticationEntryPoint;
 import com.RootBuildUp.oauth2jwtspringboot.util.VariableName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         System.out.println("10.---------------ResourceServerConfig HttpSecurity ------------------");
-        http.cors().disable().
-                authorizeRequests().antMatchers("/user", "/login").permitAll()
-                .and()
-                .authorizeRequests().antMatchers("/actuator**").permitAll()
-                .antMatchers("/oauth/token").permitAll()
-                .antMatchers("/refreshToken").permitAll()
+                 http
+                .csrf()
+                .disable()
+                .authorizeRequests()
                 .anyRequest().authenticated();
     }
 
@@ -67,13 +66,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Bean
     public BasicAuthenticationEntryPoint authenticationEntryPoint(){
-        return new MyBasicAuthenticationEntryPoint();
+        return new CustomAuthenticationEntryPoint();
     }
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         System.out.println("6.------------resources Config----------------");
-
-        resources.tokenStore(enhancer).accessDeniedHandler(accessDeniedHandler()).resourceId("oauth2-client");
+        resources.tokenStore(enhancer)
+                .authenticationEntryPoint(authenticationEntryPoint())
+                .accessDeniedHandler(accessDeniedHandler()).resourceId("oauth2-client");
     }
 
     }

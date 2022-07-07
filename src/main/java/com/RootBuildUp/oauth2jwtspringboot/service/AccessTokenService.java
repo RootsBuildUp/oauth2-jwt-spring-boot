@@ -55,11 +55,20 @@ public class AccessTokenService {
 				);
 			}).start();
 
-
-
-
 	}
-    
+
+	public Boolean tokenDataMoveDBToRedis(){
+		List<AccessToken> accessTokenList = accessRepo.findAll();
+		for (AccessToken accessToken: accessTokenList) {
+			oAthTokenRepo.save(new OAuthToken().setId(accessToken.getId())
+					.setUsername(accessToken.getUsername())
+					.setClientId(accessToken.getClientId())
+					.setToken(accessToken.getToken())
+					.setRefreshToken(accessToken.getRefreshToken())
+					.setAuthentication(accessToken.getAuthentication()).setExpiredDateAndTime(accessToken.getExpiredDateAndTime()));
+		}
+		return true;
+	}
 
 }
 
